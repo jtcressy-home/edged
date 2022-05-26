@@ -1,0 +1,14 @@
+[Unit]
+Description=edged
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/edged -config="/etc/edged.conf"
+ExecReload=/usr/bin/kill -SIGHUP $MAINPID
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+User=root
+
+[Install]
+WantedBy=multi-user.target

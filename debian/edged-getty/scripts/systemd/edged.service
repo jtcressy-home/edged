@@ -1,0 +1,21 @@
+[Unit]
+Description=edged on tty1
+After=network.target
+Conflicts=getty@tty1.service
+
+[Service]
+ExecStart=/usr/bin/edged -config="/etc/edged.conf" -tui -tick=1s
+ExecReload=/usr/bin/kill -SIGHUP $MAINPID
+StandardInput=tty
+StandardOutput=tty
+StandardError=journal
+Restart=always
+User=root
+TTYPath=/dev/tty1
+TTYReset=yes
+TTYVHangup=yes
+TTYVTDisallocate=yes
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target

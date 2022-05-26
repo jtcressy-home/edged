@@ -1,0 +1,65 @@
+before:
+  hooks:
+    - go mod download
+builds:
+  - binary: edged
+    main: ./cmd/daemon
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+    goarch:
+      - arm
+      - arm64
+      - amd64
+    goarm:
+      - 6
+      - 7
+    ignore:
+      - goos: darwin
+        goarch: arm
+nfpms:
+  - package_name: edged
+    maintainer: Joel Cressy <joel@jtcressy.net>
+    license: "MIT"
+    formats:
+      - deb
+    replaces:
+      - edged-getty
+    contents:
+      - src: debian/edged/scripts/systemd/edged.service
+        dst: /etc/systemd/system/edged.service
+      - src: debian/edged/conf/edged.conf
+        dst: /etc/edged.conf
+        type: config
+    scripts:
+      postinstall: debian/edged/scripts/postinstall.sh
+      preremove: debian/edged/scripts/preremove.sh
+  - id: edged-getty
+    package_name: edged-getty
+    maintainer: Joel Cressy <joel@jtcressy.net>
+    license: "MIT"
+    formats:
+      - deb
+    replaces:
+      - edged
+    contents:
+      - src: debian/edged-getty/scripts/systemd/edged.service
+        dst: /etc/systemd/system/edged.service
+      - src: debian/edged-getty/conf/edged.conf
+        dst: /etc/edged.conf
+        type: config
+    scripts:
+      postinstall: debian/edged-getty/scripts/postinstall.sh
+      preremove: debian/edged-getty/scripts/preremove.sh
+checksum:
+  name_template: 'checksums.txt'
+snapshot:
+  name_template: "{{ .Tag }}-next"
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
