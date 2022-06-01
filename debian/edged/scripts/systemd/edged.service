@@ -3,7 +3,7 @@ Description=edged
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/edged -config="/etc/edged.conf"
+ExecStart=/usr/bin/edged -config="/etc/edged.conf" -displays=oled -tick=1s
 ExecReload=/usr/bin/kill -SIGHUP $MAINPID
 StandardOutput=inherit
 StandardError=inherit

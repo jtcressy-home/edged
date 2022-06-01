@@ -4,7 +4,7 @@ After=network.target
 Conflicts=getty@tty1.service
 
 [Service]
-ExecStart=/usr/bin/edged -config="/etc/edged.conf" -tui -tick=1s
+ExecStart=/usr/bin/edged -config="/etc/edged.conf" -displays=tui,oled -tick=1s
 ExecReload=/usr/bin/kill -SIGHUP $MAINPID
 StandardInput=tty
 StandardOutput=tty
