@@ -1,11 +1,9 @@
 package config
 
 import (
-	ui "github.com/gizak/termui/v3"
 	"github.com/namsral/flag"
 	"io"
-	"log"
-	"os"
+	"strings"
 	"tailscale.com/client/tailscale"
 	tspaths "tailscale.com/paths"
 	"time"
@@ -14,10 +12,9 @@ import (
 const defaultTick = 60 * time.Second
 
 type Config struct {
-	Tick        time.Duration
-	EnableTUI   bool
-	DisplayType string
-	LogOutput   io.Writer
+	Tick         time.Duration
+	DisplayTypes []string
+	LogOutput    io.Writer
 }
 
 func (c *Config) Init(args []string) error {
@@ -26,8 +23,7 @@ func (c *Config) Init(args []string) error {
 
 	var (
 		tailscaledSocket = flags.String("socket", tspaths.DefaultTailscaledSocket(), "Path to tailscaled's unix socket")
-		displayType      = flags.String("display", "oled", "External display type: one of lcd,oled")
-		termUI           = flags.Bool("tui", false, "Whether to use terminal UI or not - redirects log output to file")
+		displayTypes     = flags.String("displays", "oled", "Display types: any of lcd,oled,tui")
 		tick             = flags.Duration("tick", defaultTick, "Refresh interval on main loop")
 	)
 
@@ -41,18 +37,7 @@ func (c *Config) Init(args []string) error {
 	}
 
 	c.Tick = *tick
-	c.EnableTUI = *termUI
-	c.DisplayType = *displayType
-
-	//TODO: once we have a wrapper display package, call its init instead
-	if c.EnableTUI {
-		log.SetOutput(os.Stderr)
-		if err := ui.Init(); err != nil {
-			return err
-		}
-	} else {
-		log.SetOutput(os.Stdout)
-	}
+	c.DisplayTypes = strings.Split(*displayTypes, ",")
 
 	return nil
 }

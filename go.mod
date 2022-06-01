@@ -7,6 +7,7 @@ require (
 	github.com/gizak/termui/v3 v3.1.0
 	github.com/namsral/flag v1.7.4-pre
 	github.com/skip2/go-qrcode v0.0.0-20200617195104-da1b6568686e
+	periph.io/x/host/v3 v3.7.2
 	tailscale.com v1.24.2
 )
 
@@ -44,4 +45,5 @@ require (
 	golang.zx2c4.com/wireguard/windows v0.4.10 // indirect
 	inet.af/netaddr v0.0.0-20211027220019-c74959edd3b6 // indirect
 	nhooyr.io/websocket v1.8.7 // indirect
+	periph.io/x/conn/v3 v3.6.10 // indirect
 )
