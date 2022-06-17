@@ -5,6 +5,7 @@ import (
 	ui "github.com/gizak/termui/v3"
 	"github.com/jtcressy-home/edged/pkg/config"
 	"github.com/jtcressy-home/edged/pkg/display"
+	"github.com/jtcressy-home/edged/pkg/display/tui"
 	tsutils "github.com/jtcressy-home/edged/pkg/tailscale_utils"
 	"log"
 	"os"
@@ -119,7 +120,7 @@ func NewController(c *config.Config) (*Controller, error) {
 	displays, err := func() (d []display.Display, err error) {
 		for _, dt := range c.DisplayTypes {
 			if dt == "tui" {
-				d = append(d, &display.Tui{})
+				d = append(d, &tui.Tui{})
 			}
 			//TODO:
 			//if dt == "oled" {

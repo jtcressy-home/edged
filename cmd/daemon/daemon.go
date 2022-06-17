@@ -69,7 +69,7 @@ func main() {
 // - Gather device information
 // - Ensure hostname is derived from board serial numbers or identifiers
 // - (Optionally) set hostname via tailscale local client
-// - figure out display options such as oled, lcd or http kiosk server (local port)
+// - DONE - figure out display options such as oled, lcd or http kiosk server (local port)
 //TODO: once tailscaled is at NeedsLogin stage:
 // - Convert AuthURL to QR Code and display it
 //TODO: after tailscaled is at Running stage:

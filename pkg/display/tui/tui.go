@@ -1,9 +1,10 @@
-package display
+package tui
 
 import (
 	"fmt"
 	ui "github.com/gizak/termui/v3"
 	"github.com/gizak/termui/v3/widgets"
+	"github.com/jtcressy-home/edged/pkg/display"
 	"github.com/skip2/go-qrcode"
 	"strings"
 	"sync"
@@ -12,7 +13,7 @@ import (
 var initonce sync.Once
 
 type Tui struct {
-	layout Layout
+	layout display.Layout
 	output []ui.Drawable
 }
 
@@ -31,7 +32,7 @@ func (d *Tui) Init() (err error) {
 	return err
 }
 
-func (d *Tui) SetLayout(layout Layout) {
+func (d *Tui) SetLayout(layout display.Layout) {
 	d.layout = layout
 }
 
@@ -39,9 +40,9 @@ func (d *Tui) PollEvents() <-chan ui.Event {
 	return ui.PollEvents()
 }
 
-func (d *Tui) Refresh(data RefreshData) (err error) {
+func (d *Tui) Refresh(data display.RefreshData) (err error) {
 	switch d.layout {
-	case Bootstrap:
+	case display.Bootstrap:
 		qrImage := widgets.NewList()
 		qrImage.Title = "Tailscale Login"
 		if data.TailscaleStatus.AuthURL != "" {
@@ -92,7 +93,7 @@ func (d *Tui) Refresh(data RefreshData) (err error) {
 		statusTable.SetRect(qrImage.GetRect().Max.X, 0, qrImage.GetRect().Max.X*2, len(statusTable.Rows)+3)
 
 		d.output = append(d.output, qrImage, statusTable)
-	case Running:
+	case display.Running:
 		statusTable := widgets.NewTable()
 		statusTable.Title = "Tailscale Status"
 		statusTable.Rows = [][]string{
@@ -122,7 +123,7 @@ func (d *Tui) Refresh(data RefreshData) (err error) {
 		statusTable.RowSeparator = false
 
 		d.output = append(d.output, statusTable)
-	case Configuration:
+	case display.Configuration:
 		text := widgets.NewParagraph()
 		text.Title = "Not Implemented"
 		d.output = append(d.output, text)
