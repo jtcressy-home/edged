@@ -2,7 +2,8 @@ before:
   hooks:
     - go mod download
 builds:
-  - binary: edged-reconciler
+  - id: reconciler
+    binary: edged-reconciler
     main: ./cmd/reconciler
     env:
       - CGO_ENABLED=0
@@ -19,7 +20,8 @@ builds:
     ignore:
       - goos: darwin
         goarch: arm
-  - binary: edged-display
+  - id: display
+    binary: edged-display
     main: ./cmd/daemon
     env:
       - CGO_ENABLED=0
