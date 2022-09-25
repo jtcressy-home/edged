@@ -1,0 +1,10 @@
+This will be the entrypoint for the edged program that
+ configures hostnames via systemd hostnamectl.
+
+The program should fork into each of these scenarios:
+- if: device is raspberry pi
+  - generate hostname from cpu serial
+- device has SMBIOS to use against dmidecode
+  - generate hostname from board info and serial
+- device is neither RPi or has SMBIOS
+  - fail and don't update hostname

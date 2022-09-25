@@ -1,0 +1,10 @@
+This will be the entrypoint for the edged program that manages
+  display outputs on edge devices
+
+The program should target two display methods:
+- tty w/ TUI
+  - This should be the default and always-on method as it just uses stdout
+  - systemd unit is configured to hijack tty1 on edge device's system
+  - tailscale QR code and runtime info should be displayed when appropriate
+- i2c OLED
+  - same as above but only enabled when device is detected

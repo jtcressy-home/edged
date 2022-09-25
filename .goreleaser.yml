@@ -2,7 +2,24 @@ before:
   hooks:
     - go mod download
 builds:
-  - binary: edged
+  - binary: edged-reconciler
+    main: ./cmd/reconciler
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+    goarch:
+      - arm
+      - arm64
+      - amd64
+    goarm:
+      - 6
+      - 7
+    ignore:
+      - goos: darwin
+        goarch: arm
+  - binary: edged-display
     main: ./cmd/daemon
     env:
       - CGO_ENABLED=0
@@ -25,13 +42,11 @@ nfpms:
     license: "MIT"
     formats:
       - deb
-    replaces:
-      - edged-getty
     contents:
       - src: debian/edged/scripts/systemd/edged.service
         dst: /etc/systemd/system/edged.service
-      - src: debian/edged/conf/edged.conf
-        dst: /etc/edged.conf
+      - src: debian/edged/conf/tailscale-prefs.yaml
+        dst: /etc/edged/tailscale-prefs.yaml
         type: config
     scripts:
       postinstall: debian/edged/scripts/postinstall.sh
@@ -46,7 +61,7 @@ nfpms:
       - edged
     contents:
       - src: debian/edged-getty/scripts/systemd/edged.service
-        dst: /etc/systemd/system/edged.service
+        dst: /etc/systemd/system/edged-getty.service
       - src: debian/edged-getty/conf/edged.conf
         dst: /etc/edged.conf
         type: config
