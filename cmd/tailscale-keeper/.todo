@@ -1,0 +1,7 @@
+This will be the entrypoint for the edged program that
+  maintains an active tailscale connection at all times
+  using best-effort QoS
+
+The program should monitor the tailscale daemon state and:
+- when backend state is "NeedsLogin" but no "AuthURL" is present,
+  - Call localapi to initiate loginInteractive

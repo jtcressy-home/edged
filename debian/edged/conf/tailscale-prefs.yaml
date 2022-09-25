@@ -1,0 +1,8 @@
+AdvertiseRoutes: []
+AdvertiseTags: null
+CorpDNS: true
+ExitNodeAllowLANAccess: false
+RouteAll: true
+RunSSH: true
+ShieldsUp: false
+WantRunning: true
