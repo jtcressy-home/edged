@@ -2,11 +2,13 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/ghodss/yaml"
 	"github.com/gianarb/planner"
 	"github.com/peak/go-config"
 	"go.uber.org/zap"
+	"inet.af/netaddr"
 	"io/ioutil"
 	"os"
 	"os/signal"
@@ -55,6 +57,10 @@ func main() {
 				case syscall.SIGHUP:
 					logger.Info("got SIGHUP, reloading config...")
 					prefs, err = MergePrefsFromFile(tailscalePlan.TargetPrefs, configFile)
+					if err != nil {
+						logger.Error(fmt.Sprintf("error reading config file: %v", err))
+						continue
+					}
 					tailscalePlan.TargetPrefs = prefs
 				}
 			case e := <-configChan:
@@ -63,6 +69,10 @@ func main() {
 				}
 				fmt.Println("config changed, reloading...")
 				prefs, err = MergePrefsFromFile(tailscalePlan.TargetPrefs, configFile)
+				if err != nil {
+					logger.Error(fmt.Sprintf("error reading config file: %v", err))
+					continue
+				}
 				tailscalePlan.TargetPrefs = prefs
 			}
 			ctx, done := context.WithTimeout(ctx, 10*time.Second)
@@ -79,11 +89,42 @@ func MergePrefsFromFile(prefs *ipn.Prefs, filename string) (*ipn.Prefs, error) {
 	if err != nil {
 		return nil, err
 	}
-	err = yaml.Unmarshal(b, prefs)
+	cprefs := &CustomPrefs{
+		prefs,
+	}
+	err = yaml.Unmarshal(b, cprefs)
 	if err != nil {
 		return nil, err
 	}
-	return prefs, nil
+	return cprefs.Prefs, nil
+}
+
+type CustomPrefs struct {
+	*ipn.Prefs
+}
+
+func (c *CustomPrefs) UnmarshalJSON(data []byte) error {
+	type Alias CustomPrefs
+
+	aux := &struct {
+		AdvertiseRoutes []string `json:"AdvertiseRoutes"`
+		*Alias
+	}{
+		Alias: (*Alias)(c),
+	}
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return err
+	}
+	if aux != nil {
+		for _, route := range aux.AdvertiseRoutes {
+			ipprefix, err := netaddr.ParseIPPrefix(route)
+			if err != nil {
+				return nil
+			}
+			c.AdvertiseRoutes = append(c.AdvertiseRoutes, ipprefix)
+		}
+	}
+	return nil
 }
 
 type TailscalePlan struct {
